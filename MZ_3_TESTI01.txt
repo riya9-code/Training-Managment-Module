@@ -1,0 +1,120 @@
+*----------------------------------------------------------------------*
+***INCLUDE MZ_3_TESTI01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  TEST  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+
+MODULE test INPUT.
+
+  OK2 = OK1.
+  CASE OK2.
+    WHEN 'CREATE'.
+  DATA: SEL TYPE TABLE OF DSELC,
+      WASEL TYPE DSELC.
+DATA: VAL TYPE TABLE OF DDSHRETVAL.
+
+
+DATA: ITAB TYPE TABLE OF Z12_COURSE,
+      WA TYPE Z12_COURSE.
+
+
+SELECT * FROM Z12_COURSE INTO TABLE  ITAB.
+
+  refresh sel.
+    WASEL-fldname = 'CID'.
+    WASEL-dyfldname = 'T1-CID'.
+    APPEND WASEL TO SEL.
+     WASEL-fldname = 'CN'.
+    WASEL-dyfldname = 'Z12_COURSE-CN'.
+    APPEND WASEL TO SEL.
+    WASEL-fldname = 'CAI'.
+    WASEL-dyfldname = 'Z12_COURSE-CAI'.
+    APPEND WASEL TO SEL.
+
+     WASEL-fldname = 'CAS'.
+    WASEL-dyfldname = 'Z12_COURSE-CAS'.
+    APPEND WASEL TO SEL.
+ WASEL-fldname = 'VP'.
+    WASEL-dyfldname = 'Z12_COURSE-VP'.
+    APPEND WASEL TO SEL.
+ WASEL-fldname = 'HN'.
+    WASEL-dyfldname = 'Z12_COURSE-HN'.
+    APPEND WASEL TO SEL.
+     WASEL-fldname = 'TM'.
+    WASEL-dyfldname = 'Z12_COURSE-TM'.
+    APPEND WASEL TO SEL.
+
+ WASEL-fldname = 'CM'.
+    WASEL-dyfldname = 'Z12_COURSE-CM'.
+    APPEND WASEL TO SEL.
+
+
+
+  CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'
+  EXPORTING
+   DDIC_STRUCTURE         = 'Z12_COURSE'
+    retfield               = 'CID'
+*   PVALKEY                = ' '
+   DYNPPROG               = SY-REPID
+   DYNPNR                 = SY-DYNNR
+   DYNPROFIELD            = 'Z12_COURSE-CID'
+*   STEPL                  = 0
+*   WINDOW_TITLE           =
+*   VALUE                  = ''
+   VALUE_ORG              = 'S'
+
+*   MULTIPLE_CHOICE        = ' '
+*   DISPLAY                = ' '
+*   CALLBACK_PROGRAM       = ' '
+*   CALLBACK_FORM          = ' '
+*   CALLBACK_METHOD        =
+*   MARK_TAB               =
+* IMPORTING
+*   USER_RESET             =
+  tables
+    value_tab              = ITAB
+*   FIELD_TAB              = FTAB
+*   RETURN_TAB             = VAL
+   DYNPFLD_MAPPING        = SEL
+* EXCEPTIONS
+*   PARAMETER_ERROR        = 1
+*   NO_VALUES_FOUND        = 2
+*   OTHERS                 = 3
+
+.
+ENDCASE.
+
+ENDMODULE.
+**&---------------------------------------------------------------------*
+*&      Module  CHECKDATE  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*MODULE checkdate INPUT.
+*SD = T1-STD.
+*  END = T1-ED.
+*  CALL FUNCTION 'DATE_COMPUTE_DAY'
+*              EXPORTING
+*                date          = SD
+*             IMPORTING
+*               DAY           = SDAY.
+*
+*
+*    IF END < SD.
+*      MESSAGE 'ENDDATE LESS IS THAN START DATE' TYPE 'E'.
+*      ELSEIF
+*        SDAY = 6 OR SDAY = 7.
+*        MESSAGE 'START DATE SHOULD BE WORKING DAY' TYPE 'E'.
+*      ENDIF.
+
+*
+
+*ENDMODULE.
+*&---------------------------------------------------------------------*
+*&      Module  F4HELP  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*

@@ -1,0 +1,9 @@
+*&---------------------------------------------------------------------*
+*& Include MZYST1TOP                                - Module Pool      SAPMZST
+*&---------------------------------------------------------------------*
+PROGRAM SAPMZST.
+
+TABLES: Z12_STUDENT.
+
+DATA: ST TYPE Z12_STUDENT,
+      SY1 TYPE SY-UCOMM.

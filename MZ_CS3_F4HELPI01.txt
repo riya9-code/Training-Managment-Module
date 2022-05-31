@@ -1,0 +1,85 @@
+*----------------------------------------------------------------------*
+***INCLUDE MZ_CS3_F4HELPI01.
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Module  F4HELP  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE f4help INPUT.
+
+
+
+DATA: SEL1 TYPE TABLE OF DSELC,
+      WASEL1 TYPE DSELC.
+
+
+  DATA: ITAB1 TYPE TABLE of Z12_INSTRUCTOR,
+        WA1 TYPE Z12_INSTRUCTOR.
+
+.
+SELECT * FROM Z12_INSTRUCTOR INTO TABLE ITAB1.
+
+refresh sel1.
+    WASEL1-fldname = 'IN_ID'.
+    WASEL1-dyfldname = 'Z12_INSTRUCTOR-IN_ID'.
+    APPEND WASEL1 TO SEL1.
+
+     WASEL1-fldname = 'FN'.
+    WASEL1-dyfldname = 'Z12_INSTRUCTOR-FN'.
+    APPEND WASEL1 TO SEL1.
+
+    WASEL1-fldname = 'LN'.
+    WASEL1-dyfldname = 'Z12_INSTRUCTOR-LN'.
+    APPEND WASEL1 TO SEL1.
+
+     WASEL1-fldname = 'MN'.
+    WASEL1-dyfldname = 'Z12_INSTRUCTOR-MN'.
+    APPEND WASEL1 TO SEL1.
+
+   WASEL1-fldname = 'PC'.
+    WASEL1-dyfldname = 'Z12_INSTRUCTOR-PC'.
+    APPEND WASEL1 TO SEL1.
+
+    WASEL1-fldname = 'SC'.
+    WASEL1-dyfldname = 'Z12_INSTRUCTOR-SC'.
+    APPEND WASEL1 TO SEL1.
+
+
+    CALL FUNCTION 'F4IF_INT_TABLE_VALUE_REQUEST'
+      EXPORTING
+       DDIC_STRUCTURE         = 'Z12_INSTRUCTOR'
+        retfield               = 'IN_ID'
+*       PVALKEY                = ' '
+       DYNPPROG               = SY-REPID
+       DYNPNR                 = '0102'
+       DYNPROFIELD            = 'Z12_INSTRUCTOR-IN_ID '
+*       STEPL                  = 0
+*       WINDOW_TITLE           =
+*       VALUE                  = ' '
+       VALUE_ORG              = 'S'
+*       MULTIPLE_CHOICE        = ' '
+*       DISPLAY                = ' '
+*       CALLBACK_PROGRAM       = ' '
+*       CALLBACK_FORM          = ' '
+*       CALLBACK_METHOD        =
+*       MARK_TAB               =
+*     IMPORTING
+*       USER_RESET             =
+      tables
+        value_tab              = ITAB1
+*       FIELD_TAB              =
+*       RETURN_TAB             =
+       DYNPFLD_MAPPING        = SEL1
+*     EXCEPTIONS
+*       PARAMETER_ERROR        = 1
+*       NO_VALUES_FOUND        = 2
+*       OTHERS                 = 3
+              .
+    IF sy-subrc <> 0.
+* Implement suitable error handling here
+    ENDIF.
+
+
+
+ENDMODULE.

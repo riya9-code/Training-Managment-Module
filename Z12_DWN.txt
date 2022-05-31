@@ -1,0 +1,238 @@
+*&---------------------------------------------------------------------*
+*& Include          ZDOWNLOAD_1
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*& Include          ZDOWNLOAD
+*&---------------------------------------------------------------------*
+
+FORM STUDENTDN.
+
+   CALL FUNCTION 'DDIF_NAMETAB_GET'
+     EXPORTING
+       tabname           = 'Z12_STUDENT'
+    TABLES
+      DFIES_TAB         =  F1.
+
+LOOP AT  F1 INTO DATA(FN1).
+  FS-FNAME = FN1-FIELDNAME.
+  APPEND FN1-FIELDNAME TO FNTAB.
+ENDLOOP.
+
+   IF sy-subrc <> 0.
+* Implement suitable error handling here
+   ENDIF.
+
+              CALL FUNCTION 'GUI_DOWNLOAD'
+                EXPORTING
+*                 BIN_FILESIZE                    =
+                  filename                        = 'C:\Users\s4user12\Desktop\EXCEL SHEETS\EXCEL1.XLS'
+                 FILETYPE                        = 'ASC'
+                 APPEND                          = 'X'
+                tables
+                  data_tab                        = <FTNAME>"ITAB
+                 FIELDNAMES                      = FNTAB.
+*
+
+  ENDFORM.
+
+
+ FORM INSTRUCTORDN.
+
+   CALL FUNCTION 'DDIF_NAMETAB_GET'
+     EXPORTING
+       tabname           = 'Z12_INSTRUCTOR'
+    TABLES
+      DFIES_TAB         =  F1.
+
+LOOP AT  F1 INTO DATA(FN1).
+  FS-FNAME = FN1-FIELDNAME.
+  APPEND FN1-FIELDNAME TO FNTAB.
+ENDLOOP.
+
+   IF sy-subrc <> 0.
+* Implement suitable error handling here
+   ENDIF.
+
+              CALL FUNCTION 'GUI_DOWNLOAD'
+                EXPORTING
+*                 BIN_FILESIZE                    =
+                  filename                        = 'C:\Users\s4user12\Desktop\EXCEL SHEETS\EXCEL2.XLS'
+                 FILETYPE                        = 'ASC'
+                 APPEND                          = 'X'
+                tables
+                  data_tab                        = <FTNAME>
+                 FIELDNAMES                      = FNTAB.
+*
+   ENDFORM.
+
+  FORM COMMUNICATIONDN.
+    CALL FUNCTION 'DDIF_NAMETAB_GET'
+     EXPORTING
+       tabname           = 'Z12_COMM'
+    TABLES
+      DFIES_TAB         =  F1.
+
+LOOP AT  F1 INTO DATA(FN1).
+  FS-FNAME = FN1-FIELDNAME.
+  APPEND FN1-FIELDNAME TO FNTAB.
+ENDLOOP.
+
+   IF sy-subrc <> 0.
+* Implement suitable error handling here
+   ENDIF.
+
+              CALL FUNCTION 'GUI_DOWNLOAD'
+                EXPORTING
+*                 BIN_FILESIZE                    =
+                  filename                        = 'C:\Users\s4user12\Desktop\EXCEL SHEETS\EXCEL3.XLS'
+                 FILETYPE                        = 'ASC'
+                 APPEND                          = 'X'
+                tables
+                  data_tab                        = <ftname>
+                 FIELDNAMES                      = FNTAB.
+*
+    ENDFORM.
+
+FORM ATTENDANCEDN.
+  CALL FUNCTION 'DDIF_NAMETAB_GET'
+     EXPORTING
+       tabname           = 'Z12_AT'
+    TABLES
+      DFIES_TAB         =  F1.
+
+LOOP AT  F1 INTO DATA(FN1).
+  FS-FNAME = FN1-FIELDNAME.
+  APPEND FN1-FIELDNAME TO FNTAB.
+ENDLOOP.
+
+   IF sy-subrc <> 0.
+* Implement suitable error handling here
+   ENDIF.
+
+              CALL FUNCTION 'GUI_DOWNLOAD'
+                EXPORTING
+*                 BIN_FILESIZE                    =
+                  filename                        = 'C:\Users\s4user12\Desktop\EXCEL SHEETS\EXCEL4.XLS'
+                 FILETYPE                        = 'ASC'
+                 APPEND                          = 'X'
+                tables
+                  data_tab                        = <ftname>
+                 FIELDNAMES                      = FNTAB.
+*
+  ENDFORM.
+
+
+ FORM COURSESDN.
+
+   CALL FUNCTION 'DDIF_NAMETAB_GET'
+     EXPORTING
+       tabname           = 'Z12_COURSE'
+    TABLES
+      DFIES_TAB         =  F1.
+
+LOOP AT  F1 INTO DATA(FN1).
+  FS-FNAME = FN1-FIELDNAME.
+  APPEND FN1-FIELDNAME TO FNTAB.
+ENDLOOP.
+
+   IF sy-subrc <> 0.
+* Implement suitable error handling here
+   ENDIF.
+
+              CALL FUNCTION 'GUI_DOWNLOAD'
+                EXPORTING
+*                 BIN_FILESIZE                    =
+                  filename                        = 'C:\Users\s4user12\Desktop\EXCEL SHEETS\EXCEL5.XLS'
+                 FILETYPE                        = 'ASC'
+                 APPEND                          = 'X'
+                tables
+                  data_tab                        = <ftname>
+                 FIELDNAMES                      = FNTAB.
+*
+   ENDFORM.
+
+  FORM INSTRUCTORALLOTMENTDN.
+    CALL FUNCTION 'DDIF_NAMETAB_GET'
+     EXPORTING
+       tabname           = 'Z12_IA'
+    TABLES
+      DFIES_TAB         =  F1.
+
+LOOP AT  F1 INTO DATA(FN1).
+  FS-FNAME = FN1-FIELDNAME.
+  APPEND FN1-FIELDNAME TO FNTAB.
+ENDLOOP.
+
+   IF sy-subrc <> 0.
+* Implement suitable error handling here
+   ENDIF.
+
+              CALL FUNCTION 'GUI_DOWNLOAD'
+                EXPORTING
+*                 BIN_FILESIZE                    =
+                  filename                        = 'C:\Users\s4user12\Desktop\EXCEL SHEETS\EXCEL6.XLS'
+                 FILETYPE                        = 'ASC'
+                 APPEND                          = 'X'
+                tables
+                  data_tab                        = <ftname>
+                 FIELDNAMES                      = FNTAB.
+*
+
+    ENDFORM.
+
+
+ FORM STUDENTENROLLDN.
+   CALL FUNCTION 'DDIF_NAMETAB_GET'
+     EXPORTING
+       tabname           = 'Z12_STEN'
+    TABLES
+      DFIES_TAB         =  F1.
+
+LOOP AT  F1 INTO DATA(FN1).
+  FS-FNAME = FN1-FIELDNAME.
+  APPEND FN1-FIELDNAME TO FNTAB.
+ENDLOOP.
+
+   IF sy-subrc <> 0.
+* Implement suitable error handling here
+   ENDIF.
+
+              CALL FUNCTION 'GUI_DOWNLOAD'
+                EXPORTING
+*                 BIN_FILESIZE                    =
+                  filename                        = 'C:\Users\s4user12\Desktop\EXCEL SHEETS\EXCEL7.XLS'
+                 FILETYPE                        = 'ASC'
+                 APPEND                          = 'X'
+                tables
+                  data_tab                        = <ftname>
+                 FIELDNAMES                      = FNTAB.
+*
+ENDFORM.
+
+  FORM TRAININGDN.
+    CALL FUNCTION 'DDIF_NAMETAB_GET'
+     EXPORTING
+       tabname           = 'Z12_TRAIN'
+    TABLES
+      DFIES_TAB         =  F1.
+
+LOOP AT  F1 INTO DATA(FN1).
+  FS-FNAME = FN1-FIELDNAME.
+  APPEND FN1-FIELDNAME TO FNTAB.
+ENDLOOP.
+
+   IF sy-subrc <> 0.
+* Implement suitable error handling here
+   ENDIF.
+
+              CALL FUNCTION 'GUI_DOWNLOAD'
+                EXPORTING
+*                 BIN_FILESIZE                    =
+                  filename                        =  'C:\Users\s4user12\Desktop\EXCEL SHEETS\EXCEL8.XLS'
+                 FILETYPE                        = 'ASC'
+                 APPEND                          = 'X'
+                tables
+                  data_tab                        = <ftname>
+                 FIELDNAMES                      = FNTAB.
+*
+    ENDFORM.

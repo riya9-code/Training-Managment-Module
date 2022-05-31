@@ -1,0 +1,106 @@
+*&---------------------------------------------------------------------*
+*& Report Z_DOWNLOAD
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT Z_DOWNLOAD.
+
+TABLES: TADIR.
+
+***********************************************************************
+*                           Data declaration                          *
+***********************************************************************
+TYPES: ABAPLINE(255) TYPE C.
+
+TYPES: BEGIN OF TY_REPOSIT,
+         PGMID    TYPE TADIR-PGMID,
+         OBJECT   TYPE TADIR-OBJECT,
+         OBJ_NAME TYPE TADIR-OBJ_NAME,
+         DEVCLASS TYPE TADIR-DEVCLASS,
+       END OF TY_REPOSIT.
+
+DATA: IT_REPOSIT TYPE STANDARD TABLE OF TY_REPOSIT,
+      WA_REPOSIT TYPE TY_REPOSIT.
+
+DATA: IT_REPSRC TYPE STANDARD TABLE OF ABAPLINE,
+      WA_REPSRC TYPE ABAPLINE.
+
+DATA: PROG(60)    TYPE C,
+      MC_FILENAME TYPE RLGRAP-FILENAME,
+      FILENAME    TYPE STRING.
+
+***********************************************************************
+*                           Selection Screen                          *
+***********************************************************************
+PARAMETERS: P_DEV TYPE TADIR-DEVCLASS.                    "Package Name
+
+*****Program Logic
+
+SELECT PGMID
+       OBJECT
+       OBJ_NAME
+       DEVCLASS
+  FROM TADIR
+  INTO TABLE IT_REPOSIT
+  WHERE PGMID    = 'R3TR' AND
+        OBJECT   = 'PROG' AND
+        DEVCLASS = P_DEV.
+
+IF SY-SUBRC NE 0.
+  MESSAGE S001(00) WITH 'No programs available in the given package'.
+  EXIT.
+ENDIF.
+
+LOOP AT IT_REPOSIT INTO WA_REPOSIT.
+  PROG = WA_REPOSIT-OBJ_NAME.
+  READ REPORT PROG INTO IT_REPSRC.
+
+  CONCATENATE 'C:\Users\s4user12\Desktop\PACKAGE 12\'
+              PROG
+              '.txt'
+         INTO MC_FILENAME.
+
+  FILENAME = MC_FILENAME.
+
+*****Function module for download files into local system
+
+  CALL FUNCTION 'GUI_DOWNLOAD'
+    EXPORTING
+      FILENAME                = FILENAME
+    TABLES
+      DATA_TAB                = IT_REPSRC
+    EXCEPTIONS
+      FILE_WRITE_ERROR        = 1
+      NO_BATCH                = 2
+      GUI_REFUSE_FILETRANSFER = 3
+      INVALID_TYPE            = 4
+      NO_AUTHORITY            = 5
+      UNKNOWN_ERROR           = 6
+      HEADER_NOT_ALLOWED      = 7
+      SEPARATOR_NOT_ALLOWED   = 8
+      FILESIZE_NOT_ALLOWED    = 9
+      HEADER_TOO_LONG         = 10
+      DP_ERROR_CREATE         = 11
+      DP_ERROR_SEND           = 12
+      DP_ERROR_WRITE          = 13
+      UNKNOWN_DP_ERROR        = 14
+      ACCESS_DENIED           = 15
+      DP_OUT_OF_MEMORY        = 16
+      DISK_FULL               = 17
+      DP_TIMEOUT              = 18
+      FILE_NOT_FOUND          = 19
+      DATAPROVIDER_EXCEPTION  = 20
+      CONTROL_FLUSH_ERROR     = 21
+      OTHERS                  = 22.
+  IF SY-SUBRC <> 0.
+* MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+*         WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+  ENDIF.
+  CLEAR PROG.
+  CLEAR WA_REPSRC.
+
+ENDLOOP.
+
+*****After download all the programs to intimate user.
+
+MESSAGE S001(00) WITH 'Check your folder for the Programs downloaded'.

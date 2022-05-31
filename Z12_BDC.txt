@@ -1,0 +1,104 @@
+
+*&---------------------------------------------------------------------*
+*& Report Z12_BDC
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT Z12_BDC.
+
+TABLES: Z12_student.
+
+
+DATA : ITAB TYPE TABLE OF Z12_STUDENT,
+      WA TYPE Z12_STUDENT,
+      BDCITAB TYPE TABLE OF BDCDATA,
+      BDCWA TYPE BDCDATA.
+
+DATA: T1 TYPE TRUXS_T_TEXT_DATA,
+      N1 TYPE N.
+
+START-OF-SELECTION.
+
+CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+  EXPORTING
+   I_FIELD_SEPERATOR          = 'X'
+   I_LINE_HEADER              = 'X'
+    i_tab_raw_data             = t1
+    i_filename                 = 'C:\Users\s4user12\Desktop\STUDENT.xlsx'
+  TABLES
+    i_tab_converted_data       = ITAB
+* EXCEPTIONS
+*   CONVERSION_FAILED          = 1
+*   OTHERS                     = 2
+          .
+IF sy-subrc <> 0.
+* Implement suitable error handling here
+ENDIF.
+
+
+
+IF SY-SUBRC = 0.
+  WRITE:/ 'FILE READ SUCESSFULLY'.
+  ELSE.
+    WRITE:/ 'FILE NOT DOWNLOADED'.
+    ENDIF.
+
+
+   loop at itab INTO  wa.
+     write:/ wa-st, wa-Fn, wa-ln, wa-mn,
+    wa-gn, wa-bd, wa-cn, wa-mid.
+     ENDLOOP.
+
+*SAPMZST  0100  X
+
+*                                                 BDC_CURSOR  ST-MID
+*                                                 BDC_OKCODE  =ADD
+*                                                 ST-MANDT  100
+*                                                 ST-ST 13
+*                                                 ST-FN PREETI
+*                                                 ST-LN RAINA
+*                                                 ST-MN S
+*                                                 ST-GN F
+*                                                 ST-BD 12.02.2000
+*                                                 ST-CN 234567
+*                                                 ST-MID  234
+*SAPLZ18_DCS' '0100' 'X'  'Z18_STUDENT-STUID' wa-stuid,
+
+  LOOP AT ITAB INTO WA.
+   PERFORM FILLBDC USING: 'SAPMZST' '0100'  'X' 'ST-ST' WA-ST,
+                        'SAPMZST' '0100'  'X' 'ST-FN' WA-FN,
+                        'SAPMZST' '0100'  'X' 'ST-LN' WA-LN,
+                        'SAPMZST' '0100'  'X' 'ST-MN' WA-MN,
+                        'SAPMZST' '0100'  'X' 'ST-GN' WA-GN,
+                        'SAPMZST' '0100'  'X' 'ST-BD' WA-BD,
+                        'SAPMZST' '0100'  'X' 'ST-CN' WA-CN,
+                        'SAPMZST' '0100'  'X' 'ST-MID' WA-MID,
+                        'SAPMZST' '0100'  'X' 'BDC_OKCODE'  '=ADD'.
+ENDLOOP.
+
+CALL TRANSACTION 'Z12_STD' USING bdcitab MODE 'A' UPDATE 'S'.
+
+
+*
+*&---------------------------------------------------------------------*
+*&      Form  FILLBDC
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_0103   text
+*      -->P_0104   text
+*      -->P_0105   text
+*      -->P_0106   text
+*      -->P_WA_PID  text
+*----------------------------------------------------------------------*
+FORM fillbdc  USING    P1 P2 P3 P4 P5.
+
+BDCWA-PROGRAM = P1.
+  BDCWA-DYNPRO = P2.
+  BDCWA-DYNBEGIN = P3.
+  BDCWA-FNAM = P4.
+  BDCWA-FVAL = P5.
+  APPEND BDCWA TO BDCITAB.
+  CLEAR BDCWA.
+
+ENDFORM.

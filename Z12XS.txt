@@ -1,0 +1,91 @@
+*&---------------------------------------------------------------------*
+*& Report Z12_CS8
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT Z12_CS8.
+
+TABLES: Z12_INSTRUCTOR, Z12_IA, Z12_TRAIN, Z12_COURSE.
+
+PARAMETERS: IN_ID  TYPE Z12_INSTRUCTOR-IN_ID MATCHCODE OBJECT Z12_INST.
+
+PARAMETERS: MONTH TYPE C LENGTH 2,
+            YEAR TYPE C LENGTH 4.
+
+DATA: SMONTH TYPE DATUM,
+      EMONTH TYPE DATUM.
+
+DATA: ITAB TYPE Z12_SF2,
+      WA   TYPE Z12_SF1,
+      TID TYPE Z12_TRAIN-TID,
+      CID TYPE Z12_COURSE-CID,
+
+      MONTH_T(15) TYPE C.
+
+AT SELECTION-SCREEN.
+
+  CONCATENATE YEAR MONTH '01' INTO SMONTH.
+
+  CALL FUNCTION 'BKK_GET_MONTH_LASTDAY'
+    EXPORTING
+      i_date = smonth
+    IMPORTING
+      e_date = emonth.
+
+  SELECT SINGLE IN_ID FROM Z12_INSTRUCTOR
+    INTO WA-IN_ID
+    WHERE IN_ID = IN_ID.
+  IF SY-SUBRC <> 0.
+    MESSAGE 'ENTER CORRECT INSTRUCTOR ID' TYPE 'E'.
+  ENDIF.
+
+  SELECT FN MN LN CMN FROM Z12_INSTRUCTOR
+    INTO (WA-FN, WA-MN, WA-LN, WA-CMN)
+    WHERE IN_ID = IN_ID.
+  ENDSELECT.
+
+  SELECT SINGLE TID FROM Z12_IA
+    INTO WA-TID
+    WHERE INID = IN_ID.
+
+
+  SELECT SINGLE CID FROM Z12_TRAIN
+    INTO WA-CID
+    WHERE TID = WA-TID.
+
+
+  SELECT CN CAI FROM Z12_COURSE
+    INTO (WA-CN, WA-CAI)
+    WHERE CID = WA-CID.
+  ENDSELECT.
+
+  SELECT SINGLE LTX FROM T247
+    INTO MONTH_T
+    WHERE SPRAS = SY-LANGU
+  AND MNR = SMONTH+4(2).
+
+CALL FUNCTION '/1BCDWB/SF00000018'
+  EXPORTING
+*   ARCHIVE_INDEX              =
+*   ARCHIVE_INDEX_TAB          =
+*   ARCHIVE_PARAMETERS         =
+*   CONTROL_PARAMETERS         =
+*   MAIL_APPL_OBJ              =
+*   MAIL_RECIPIENT             =
+*   MAIL_SENDER                =
+*   OUTPUT_OPTIONS             =
+*   USER_SETTINGS              = 'X'
+    in_id                      = WA-IN_ID
+    fn                         = WA-FN
+    mn                         = WA-MN
+    ln                         = WA-LN
+    cnm                        = WA-CMN
+    month                      = MONTH_T
+    year                       = YEAR
+    cai                        = WA-CAI
+* IMPORTING
+*   DOCUMENT_OUTPUT_INFO       =
+*   JOB_OUTPUT_INFO            =
+*   JOB_OUTPUT_OPTIONS         =
+  TABLES
+    itab                       = ITAB.

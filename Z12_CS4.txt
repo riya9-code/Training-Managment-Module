@@ -1,0 +1,168 @@
+*&---------------------------------------------------------------------*
+*& Report Z12_CS4
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT Z12_CS4.
+
+TABLES:SSCRFIELDS.
+
+
+DATA: CP TYPE Z12_TRAIN-CAP,
+      STATUS TYPE Z12_STEN-STATUS,
+      ST TYPE Z12_STEN,
+      OK1 TYPE SY-UCOMM, ITAB TYPE STANDARD TABLE OF Z12_STEN, WS TYPE Z12_STEN,
+      T1 TYPE Z16_STDNTENROLL,
+      CT TYPE I.
+
+SELECTION-SCREEN BEGIN OF BLOCK B1 WITH FRAME.
+
+  PARAMETERS: TRAINID TYPE Z12_TRAIN-TID,
+               STID TYPE Z12_STEN-STID,
+              CRID TYPE Z12_COURSE-CID ,
+              CNM TYPE Z12_COURSE-CN,
+              SD TYPE Z12_TRAIN-STD ,
+              ED TYPE Z12_TRAIN-ED,
+              AVA1 TYPE C.
+SELECTION-SCREEN SKIP 4.
+
+SELECTION-SCREEN PUSHBUTTON 4(20) TEXT-001 USER-COMMAND ENROLL.
+SELECTION-SCREEN PUSHBUTTON 30(20) TEXT-002 USER-COMMAND CANCEL.
+SELECTION-SCREEN PUSHBUTTON 55(20) TEXT-003 USER-COMMAND REFRESH.
+
+SELECTION-SCREEN END OF BLOCK B1.
+
+      AT SELECTION-SCREEN.
+        CASE SSCRFIELDS-UCOMM.
+          WHEN 'ENROLL'.
+            IF TRAINID IS INITIAL.
+              MESSAGE 'NO ACTIVE TRAINING SELECTED' TYPE 'E'.
+              ENDIF.
+              IF CRID IS INITIAL.
+                MESSAGE 'SELECT COURSE ID' TYPE 'E'.
+              ENDIF.
+
+          IF SY-SUBRC = 0.
+       SELECT * FROM Z12_STEN INTO TABLE ITAB
+        WHERE TID = TRAINID.
+        LOOP AT ITAB INTO WS.
+            CT = CT + 1.
+            ENDLOOP.
+             SELECT SINGLE CAP FROM Z12_TRAIN INTO CP.
+            IF CP > CT.
+          SELECT SINGLE STID FROM Z12_STEN  INTO T1
+          WHERE TID = TRAINID AND STID = STID.
+        IF SY-SUBRC = 0.
+            MESSAGE 'TRAINING ALREADY EXISTS FOR STUDENT' TYPE 'E'.
+            ENDIF.
+              STATUS = 'APR WF'.
+              AVA1 = 'Y'.
+              DATA: A1 TYPE C.
+
+                        .
+
+            CALL FUNCTION 'POPUP_TO_CONFIRM'
+                EXPORTING
+*                 TITLEBAR                    = ' '
+*                 DIAGNOSE_OBJECT             = ' '
+                  text_question               =  'DO YOU WANT ENROLL/CANCEL FOR TRAINING ?'
+                 TEXT_BUTTON_1               = 'YES'(005)
+*                 ICON_BUTTON_1               =
+                 TEXT_BUTTON_2               = 'NO'(006)
+*                 ICON_BUTTON_2               = ' '
+                 DEFAULT_BUTTON              = '1'
+*                 DISPLAY_CANCEL_BUTTON       = 'X'
+*                 USERDEFINED_F1_HELP         = ' '
+*                 START_COLUMN                = 25
+*                 START_ROW                   = 6
+*                 POPUP_TYPE                  =
+*                 IV_QUICKINFO_BUTTON_1       = ' '
+*                 IV_QUICKINFO_BUTTON_2       = ' '
+               IMPORTING
+                 ANSWER                      = A1
+*               TABLES
+*                 PARAMETER                   = ENROLL
+*               EXCEPTIONS
+*                 TEXT_NOT_FOUND              = 1
+*                 OTHERS                      = 2
+                        .
+              IF sy-subrc <> 0.
+* Implement suitable error handling here
+              ENDIF.
+                 IF A1 = '1'.
+              MESSAGE 'ENROLLMENT REQUEST INITIATED SUCCESFULLY' TYPE 'I'.
+              CALL SCREEN '101'.
+              ELSEIF A1  = '2'.
+                MESSAGE 'ENROLLMENT REQUEST NOT INITIATED' TYPE 'I'.
+                ELSE.
+                 SET SCREEN '1000'.
+                 ENDIF.
+              ELSE.
+               AVA1 = 'N'.
+           MESSAGE 'TRAINING SELECTED FOR ENROLLMENT IS NO LONGER AVAILABLE' TYPE 'E'.
+            ENDIF.
+            ELSE.
+            MESSAGE 'INVALID VALUE' TYPE 'E'.
+            ENDIF.
+           WHEN 'CANCEL'.
+              IF STATUS = 'APP WF'.
+                STATUS = 'REJ'.
+                MESSAGE 'ENROLLMENT REQUEST CANCELLED' TYPE 'I'.
+                ELSEIF STATUS = 'REJ'.
+                  MESSAGE 'YOUR ENROLLMENT IS ALREADY WITHDRAWN' TYPE 'E'.
+                ENDIF.
+                CALL FUNCTION 'POPUP_TO_CONFIRM'
+                EXPORTING
+*                 TITLEBAR                    = ' '
+*                 DIAGNOSE_OBJECT             = ' '
+                  text_question               =  'DO YOU WANT ENROLL/CANCEL FOR TRAINING ?'
+                 TEXT_BUTTON_1               = 'YES'(005)
+*                 ICON_BUTTON_1               = ' '
+*                 TEXT_BUTTON_2               = 'NO'(006)
+*                 ICON_BUTTON_2               = ' '
+*                 DEFAULT_BUTTON              = '1'
+*                 DISPLAY_CANCEL_BUTTON       = 'X'
+*                 USERDEFINED_F1_HELP         = ' '
+*                 START_COLUMN                = 25
+*                 START_ROW                   = 6
+*                 POPUP_TYPE                  =
+*                 IV_QUICKINFO_BUTTON_1       = ' '
+*                 IV_QUICKINFO_BUTTON_2       = ' '
+*               IMPORTING
+                 ANSWER                      = A1
+*               TABLES
+*                 PARAMETER                   = ENROLL
+*               EXCEPTIONS
+*                 TEXT_NOT_FOUND              = 1
+*                 OTHERS                      = 2
+                        .
+              IF sy-subrc <> 0.
+* Implement suitable error handling here
+              ENDIF.
+               IF A1 = '1'.
+              MESSAGE 'ENROLLMENT REQUEST INITIATED SUCCESFULLY' TYPE 'I'.
+              CALL SCREEN '101'.
+              ELSEIF A1  = '2'.
+                MESSAGE 'ENROLLMENT REQUEST NOT INITIATED' TYPE 'I'.
+                ELSE.
+                 SET SCREEN '1000'.
+                 ENDIF.
+                WHEN 'REFRESH'.
+                 CLEAR: TRAINID, STID,CRID, CNM, SD, ED.
+                ENDCASE.
+*&---------------------------------------------------------------------*
+*&      Module  USER_COMMAND_0101  INPUT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+MODULE user_command_0101 INPUT.
+CASE OK1.
+ WHEN 'APR'.
+MODIFY Z12_STEN FROM ST.
+MESSAGE 'ENROLLED SUCCESFULLY' TYPE 'I'.
+WHEN 'REJ'.
+  MESSAGE 'ENROLLMENT REJECTED' TYPE 'I'.
+  WHEN 'BCK'.
+    CALL SCREEN '1000'.
+    ENDCASE.
+ENDMODULE.

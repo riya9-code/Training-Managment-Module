@@ -1,0 +1,93 @@
+*&---------------------------------------------------------------------*
+*& Report Z12_CS7
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT Z12_CS7.
+
+TABLES: Z12_TRAIN, Z12_COURSE, Z12_AT, Z12_STUDENT.
+
+PARAMETERS: TRAINID TYPE Z12_TRAIN-TID,
+            ATTDATE TYPE Z12_AT-AD.
+
+DATA: ITAB TYPE TABLE OF Z12_TRAIN,
+      WA TYPE Z12_TRAIN,
+      COURSEID TYPE Z12_COURSE-CID,
+      CRSENAME TYPE Z12_COURSE-CN,
+      CADMINID TYPE Z12_COURSE-CAI.
+
+DATA: STITAB TYPE TABLE OF Z12_CS7,
+      STWA TYPE Z12_CS7,
+      STUDID TYPE Z12_STUDENT-ST,
+      FNAME TYPE Z12_STUDENT-FN.
+
+AT SELECTION-SCREEN.
+  IF ATTDATE > Z12_TRAIN-ED AND  ATTDATE < Z12_TRAIN-STD .
+    MESSAGE 'ENTER APPROPRIATE DATE' TYPE 'E'.
+  ENDIF.
+
+  SELECT TID FROM Z12_TRAIN INTO TABLE ITAB
+    WHERE TID = TRAINID.
+  IF TRAINID IS INITIAL OR SY-SUBRC <> 0.
+    MESSAGE 'ENTER VALID TRAINING ID' TYPE 'E'.
+  ENDIF.
+
+START-OF-SELECTION.
+
+  SELECT ST FN MN LN FROM Z12_CS7
+    INTO TABLE STITAB
+  WHERE TID = TRAINID.
+
+  SELECT CID CN CAI FROM Z12_TRAINVIEW
+    INTO ( COURSEID, CRSENAME, CADMINID )
+    WHERE TID = TRAINID.
+  ENDSELECT.
+
+  CALL FUNCTION 'OPEN_FORM'
+    EXPORTING
+      form     = 'Z12_F1'
+      language = sy-langu.
+
+  LOOP AT STITAB INTO STWA.
+    CALL FUNCTION 'WRITE_FORM'
+      EXPORTING
+        element  = 'STUDENT'
+        function = 'SET'
+        type     = 'BODY'
+        window   = 'MAIN'.
+  ENDLOOP.
+
+  CALL FUNCTION 'WRITE_FORM'
+    EXPORTING
+      function = 'SET'
+      type     = 'BODY'
+      window   = 'W1'.
+
+  CALL FUNCTION 'WRITE_FORM'
+    EXPORTING
+      function = 'SET'
+      type     = 'BODY'
+      window   = 'W2'.
+
+  CALL FUNCTION 'WRITE_FORM'
+    EXPORTING
+      element  = 'PARAMETERS'
+      function = 'SET'
+      type     = 'BODY'
+      window   = 'W3'.
+
+  CALL FUNCTION 'WRITE_FORM'
+    EXPORTING
+      element  = 'COURSEADMINID'
+      function = 'SET'
+      type     = 'BODY'
+      window   = 'W5'.
+
+  CALL FUNCTION 'WRITE_FORM'
+    EXPORTING
+      element  = 'PARAMETER'
+      function = 'SET'
+      type     = 'BODY'
+      window   = 'W4'.
+
+  CALL FUNCTION 'CLOSE_FORM'.

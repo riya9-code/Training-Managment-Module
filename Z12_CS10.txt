@@ -1,0 +1,54 @@
+*&---------------------------------------------------------------------*
+*& Report Z12_CS10
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT Z12_CS10.
+
+
+TABLES: z12_student, z12_sten, z12_train, z12_course.
+
+PARAMETERS: st   TYPE z12_student-st matchcode object z12_st,
+            tid TYPE z12_train-tid matchcode object z12_tr.
+
+DATA: itab TYPE z12_tt10,
+      wa   TYPE z12_str10.
+
+SELECT a~st, a~fn, a~mn, a~ln, a~mid,
+       b~marks,
+       c~tid, c~std, c~ed, c~ic,
+       d~cid, d~cn, d~cai, d~cm
+  FROM z12_student AS a INNER JOIN z12_sten AS b
+  ON a~st = b~stid INNER JOIN z12_train AS c
+  ON b~tid = c~tid INNER JOIN z12_course AS d
+  ON c~cid = d~cid
+  WHERE b~stid = @st AND b~tid = @tid
+  INTO CORRESPONDING FIELDS OF TABLE @itab.
+
+IF sy-subrc <> 0.
+  MESSAGE 'Check the values again!' TYPE 'E'.
+ENDIF.
+
+LOOP AT itab INTO wa.
+  IF wa-marks >= wa-marks AND wa-ic = 'Y'.
+    CALL FUNCTION '/1BCDWB/SF00000058'
+      EXPORTING
+        fn    = wa-fn
+        mn    = wa-mn
+        ln    = wa-ln
+        tid  = wa-tid
+        cn    = wa-cn
+        std    = wa-std
+        ed    = wa-ed
+        cid      = wa-cid
+        marks    = wa-marks
+        mid    = wa-mid
+        cai = wa-cai
+      TABLES
+        itab     = itab.
+
+  ELSE.
+    MESSAGE 'Training Not Completed' TYPE 'E'.
+  ENDIF.
+
+ENDLOOP.

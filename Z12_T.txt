@@ -1,0 +1,41 @@
+*&---------------------------------------------------------------------*
+*& Report Z12_CS12
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT Z12_CS12.
+
+PARAMETERS: TID TYPE Z12_AT-TID,
+            PID TYPE Z12_AT-PID,
+            PT TYPE Z12_AT-PT.
+
+DATA: WA TYPE Z12_STEN,
+      WA1 TYPE Z12_IA.
+
+DATA: BADI_CS12 TYPE REF TO Z12_BADI.
+
+AT SELECTION-SCREEN.
+
+IF PT EQ 'S'.
+  SELECT SINGLE STID TID FROM Z12_STEN INTO CORRESPONDING FIELDS OF WA
+    WHERE STID = PID AND TID = TID.
+
+ELSEIF PT EQ 'I'.
+  SELECT SINGLE INID TID FROM Z12_IA INTO CORRESPONDING FIELDS OF WA1
+    WHERE INID = PID AND TID = TID.
+
+    ELSE.
+      MESSAGE 'PERSON CAN HOLD EITHER "S" OR "I"' TYPE 'E'.
+    ENDIF.
+
+START-OF-SELECTION.
+
+     GET BADI BADI_CS12.
+    CALL badi badi_cs12->att_val
+      EXPORTING
+        pid    = PID
+        pt     = PT
+        wa_s   = WA
+        wa_i   = WA1
+        tid    = TID
+        .

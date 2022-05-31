@@ -1,0 +1,795 @@
+*&---------------------------------------------------------------------*
+*& Include          ZDATAUPLOAD
+*&---------------------------------------------------------------------*
+
+FORM STUDENT.
+
+
+  CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+    EXPORTING
+     I_FIELD_SEPERATOR          = 'X'
+*     I_LINE_HEADER              = 'X'
+      i_tab_raw_data             = T1
+      i_filename                 = FILENAME
+    TABLES
+      i_tab_converted_data       =  <FTNAME> "TNAME.
+*   EXCEPTIONS
+*     CONVERSION_FAILED          = 1
+*     OTHERS                     = 2
+.
+IF sy-subrc = 0.
+    WRITE:/ 'FILE READ' COLOR 3.
+    ELSE.
+    WRITE:/ 'NOT READ'.
+    ENDIF.
+     ASSIGN ITAB->* TO <FST>.
+  ASSIGN WA->* TO <FSW>.
+  WRITE:/ 'TABLE CREATED FOR STUDENT' COLOR 3.
+LOOP AT <FST> INTO <FSW>.
+  N1 = SY-TABIX.
+  DO.
+    ASSIGN COMPONENT SY-INDEX OF STRUCTURE <FSW> TO <FSCOL>.
+    IF SY-SUBRC <> 0.
+      EXIT.
+      ENDIF.
+
+CASE SY-INDEX.
+    WHEN 1.
+            IF <FSCOL> IS INITIAL.
+       CONCATENATE 'STUDENTID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 2.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'FIRSTNAME IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 3.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'LASTNAME IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 4.
+      IF <FSCOL> IS INITIAL.
+        CONCATENATE 'MIDDLENAME IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+   WHEN 5.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'GENDER IS INITIAL IN ROW' N1 INTO WAALV.
+      ENDIF.
+*   WHEN 6.
+*       IF <FSCOL> IS INITIAL.
+*        CONCATENATE 'BIRTHDAY IS INITIAL IN ROW' N1 INTO WAALV.
+*        ENDIF.
+*   WHEN 7.
+*       IF <FSCOL> IS INITIAL.
+*        CONCATENATE 'COMMNUMBER IS INITIAL IN ROW' N1 INTO WAALV.
+*        ENDIF.
+*    WHEN 8.
+*       IF <FSCOL> IS INITIAL.
+*        CONCATENATE 'MANAGERID IS INITIAL IN ROW' N1 INTO WAALV.
+*        ENDIF.
+*    WHEN 9.
+*       IF <FSCOL> IS INITIAL.
+*        CONCATENATE 'MANAGERSAPID IS INITIAL IN ROW' N1 INTO WAALV.
+*         ENDIF.
+          ENDCASE.
+
+   IF WAALV IS NOT INITIAL.
+            APPEND WAALV TO italv.
+            CLEAR WAALV.
+            ENDIF.
+            ENDDO.
+          ENDLOOP.
+
+IF ITALV IS NOT INITIAL.
+
+  DATA P1 TYPE REF TO CL_SALV_TABLE.
+  CL_SALV_TABLE=>factory(
+*    EXPORTING
+*      list_display   = if_salv_c_bool_sap=>false " ALV Displayed in List Mode
+*      r_container    =                           " Abstract Container for GUI Controls
+*      container_name =
+    IMPORTING
+      r_salv_table   =   P1                     " Basis Class Simple ALV Tables
+    CHANGING
+      t_table        =  ITALV
+  ).
+*  CATCH cx_salv_msg. " ALV: General Error Class with Message
+  P1->display( ).
+*CATCH cx_salv_msg. " ALV: General Error Class with Message
+EXIT.
+ELSE.
+    MESSAGE 'NO ERRORS' TYPE 'S'.
+
+ MODIFY Z12_STUDENT FROM TABLE <FTNAME>.
+  IF SY-SUBRC = 0.
+  WRITE:/ 'DATA ADDED'.
+  ELSE.
+    WRITE:/ 'ERROR'.
+    ENDIF.
+    ENDIF.
+  ENDFORM.
+
+
+
+
+
+FORM INSTRUCTOR.
+    CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+    EXPORTING
+     I_FIELD_SEPERATOR          = 'X'
+     I_LINE_HEADER              = 'X'
+      i_tab_raw_data             = T1
+      i_filename                 = FILENAME
+    TABLES
+      i_tab_converted_data       = <FTNAME>
+*   EXCEPTIONS
+*     CONVERSION_FAILED          = 1
+*     OTHERS                     = 2
+            .
+    IF sy-subrc = 0.
+    WRITE:/ 'FILE READ' COLOR 3.
+    ELSE.
+    WRITE:/ 'NOT READ'.
+    ENDIF.
+     ASSIGN ITAB->* TO <FST>.
+  ASSIGN WA->* TO <FSW>.
+  WRITE:/ 'TABLE CREATED FOR INSTRUCTOR' COLOR 3.
+    LOOP AT <FST> INTO <FSW>.
+  N1 = SY-TABIX.
+  DO.
+    ASSIGN COMPONENT SY-INDEX OF STRUCTURE <FSW> TO <FSCOL>.
+    IF SY-SUBRC <> 0.
+      EXIT.
+      ENDIF.
+
+CASE SY-INDEX.
+    WHEN 1.
+            IF <FSCOL> IS INITIAL.
+       CONCATENATE 'INSTRUCTORID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 2.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'FIRSTNAME IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 3.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'LASTNAME IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 4.
+      IF <FSCOL> IS INITIAL.
+        CONCATENATE 'MIDDLENAME IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+   WHEN 5.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'GENDER IS INITIAL IN ROW' N1 INTO WAALV.
+      ENDIF.
+   WHEN 6.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'COMMNUMBER IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+   WHEN 7.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'PRIMARYCOURSE IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+    WHEN 8.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'SECONDARYCOURSE IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+    WHEN 9.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'HOURSLIMIT IS INITIAL IN ROW' N1 INTO WAALV.
+         ENDIF.
+
+         WHEN 10.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'ISEXTERNAL IS INITIAL IN ROW' N1 INTO WAALV.
+         ENDIF.
+         WHEN 11.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'RATEPERHOUR IS INITIAL IN ROW' N1 INTO WAALV.
+         ENDIF.
+
+         WHEN 12.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'CURRENCY IS INITIAL IN ROW' N1 INTO WAALV.
+         ENDIF.
+          ENDCASE.
+
+     IF WAALV IS NOT INITIAL.
+            APPEND WAALV TO italv.
+            CLEAR WAALV.
+            ENDIF.
+            ENDDO.
+          ENDLOOP.
+
+IF ITALV IS NOT INITIAL.
+
+  DATA P1 TYPE REF TO CL_SALV_TABLE.
+  CL_SALV_TABLE=>factory(
+*    EXPORTING
+*      list_display   = if_salv_c_bool_sap=>false " ALV Displayed in List Mode
+*      r_container    =                           " Abstract Container for GUI Controls
+*      container_name =
+    IMPORTING
+      r_salv_table   =   P1                     " Basis Class Simple ALV Tables
+    CHANGING
+      t_table        =  ITALV
+  ).
+*  CATCH cx_salv_msg. " ALV: General Error Class with Message
+  P1->display( ).
+*CATCH cx_salv_msg. " ALV: General Error Class with Message
+EXIT.
+ELSE.
+    MESSAGE 'NO ERRORS' TYPE 'S'.
+      ENDIF.
+
+       MODIFY Z12_INSTRUCTOR FROM TABLE <FTNAME>.
+  IF SY-SUBRC = 0.
+  WRITE:/ 'DATA ADDED'.
+  ELSE.
+    WRITE:/ 'ERROR'.
+    ENDIF.
+    ENDFORM.
+
+
+
+
+
+ FORM COMMUNICATION.
+      CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+    EXPORTING
+     I_FIELD_SEPERATOR          = 'X'
+     I_LINE_HEADER              = 'X'
+      i_tab_raw_data             = T1
+      i_filename                 = FILENAME
+    TABLES
+      i_tab_converted_data       = <FTNAME>
+*   EXCEPTIONS
+*     CONVERSION_FAILED          = 1
+*     OTHERS                     = 2
+            .
+    IF sy-subrc = 0.
+    WRITE:/ 'FILE READ' COLOR 3.
+    ELSE.
+    WRITE:/ 'NOT READ'.
+    ENDIF.
+     ASSIGN ITAB->* TO <FST>.
+  ASSIGN WA->* TO <FSW>.
+  WRITE:/ 'TABLE CREATED FOR COMMUNICATION' COLOR 3.
+    LOOP AT <FST> INTO <FSW>.
+  N1 = SY-TABIX.
+  DO.
+    ASSIGN COMPONENT SY-INDEX OF STRUCTURE <FSW> TO <FSCOL>.
+    IF SY-SUBRC <> 0.
+      EXIT.
+      ENDIF.
+
+CASE SY-INDEX.
+    WHEN 1.
+            IF <FSCOL> IS INITIAL.
+       CONCATENATE 'COMMUNICATION IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 2.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'HOUSENO IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 3.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'STREET IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 4.
+      IF <FSCOL> IS INITIAL.
+        CONCATENATE 'CITY IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+   WHEN 5.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'REGION IS INITIAL IN ROW' N1 INTO WAALV.
+      ENDIF.
+   WHEN 6.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'COUNTRY IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+   WHEN 7.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'EMAILID IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+    WHEN 8.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'TELNUMBER IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+    WHEN 9.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'SAPID IS INITIAL IN ROW' N1 INTO WAALV.
+         ENDIF.
+          ENDCASE.
+    IF WAALV IS NOT INITIAL.
+            APPEND WAALV TO italv.
+            CLEAR WAALV.
+            ENDIF.
+            ENDDO.
+          ENDLOOP.
+
+IF ITALV IS NOT INITIAL.
+
+  DATA P1 TYPE REF TO CL_SALV_TABLE.
+  CL_SALV_TABLE=>factory(
+*    EXPORTING
+*      list_display   = if_salv_c_bool_sap=>false " ALV Displayed in List Mode
+*      r_container    =                           " Abstract Container for GUI Controls
+*      container_name =
+    IMPORTING
+      r_salv_table   =   P1                     " Basis Class Simple ALV Tables
+    CHANGING
+      t_table        =  ITALV
+  ).
+*  CATCH cx_salv_msg. " ALV: General Error Class with Message
+  P1->display( ).
+*CATCH cx_salv_msg. " ALV: General Error Class with Message
+EXIT.
+ELSE.
+    MESSAGE 'NO ERRORS' TYPE 'S'.
+      ENDIF.
+      MODIFY Z12_COMM FROM TABLE <FTNAME>.
+  IF SY-SUBRC = 0.
+  WRITE:/ 'DATA ADDED'.
+  ELSE.
+    WRITE:/ 'ERROR'.
+    ENDIF.
+    ENDFORM.
+
+
+
+
+
+ FORM  ATTENDANCE.
+      CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+    EXPORTING
+     I_FIELD_SEPERATOR          = 'X'
+     I_LINE_HEADER              = 'X'
+      i_tab_raw_data             = T1
+      i_filename                 = FILENAME
+    TABLES
+      i_tab_converted_data       = <FTNAME>
+*   EXCEPTIONS
+*     CONVERSION_FAILED          = 1
+*     OTHERS                     = 2
+            .
+    IF sy-subrc = 0.
+    WRITE:/ 'FILE READ' COLOR 3.
+    ELSE.
+    WRITE:/ 'NOT READ'.
+    ENDIF.
+  ASSIGN ITAB->* TO <FST>.
+  ASSIGN WA->* TO <FSW>.
+  WRITE:/ 'TABLE CREATED FOR ATTENDANCE' COLOR 3.
+    LOOP AT <FST> INTO <FSW>.
+  N1 = SY-TABIX.
+  DO.
+    ASSIGN COMPONENT SY-INDEX OF STRUCTURE <FSW> TO <FSCOL>.
+    IF SY-SUBRC <> 0.
+      EXIT.
+      ENDIF.
+
+CASE SY-INDEX.
+    WHEN 1.
+            IF <FSCOL> IS INITIAL.
+       CONCATENATE 'TRAININGD IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 2.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'PERSONID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 3.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'PERSONTYPE IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 4.
+      IF <FSCOL> IS INITIAL.
+        CONCATENATE 'ATTENDANCEDATE IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+   WHEN 5.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'ATTENDANCESTATUS IS INITIAL IN ROW' N1 INTO WAALV.
+      ENDIF.
+          ENDCASE.
+       IF WAALV IS NOT INITIAL.
+            APPEND WAALV TO italv.
+            CLEAR WAALV.
+            ENDIF.
+            ENDDO.
+          ENDLOOP.
+
+IF ITALV IS NOT INITIAL.
+
+  DATA P1 TYPE REF TO CL_SALV_TABLE.
+  CL_SALV_TABLE=>factory(
+*    EXPORTING
+*      list_display   = if_salv_c_bool_sap=>false " ALV Displayed in List Mode
+*      r_container    =                           " Abstract Container for GUI Controls
+*      container_name =
+    IMPORTING
+      r_salv_table   =   P1                     " Basis Class Simple ALV Tables
+    CHANGING
+      t_table        =  ITALV
+  ).
+*  CATCH cx_salv_msg. " ALV: General Error Class with Message
+  P1->display( ).
+*CATCH cx_salv_msg. " ALV: General Error Class with Message
+EXIT.
+ELSE.
+    MESSAGE 'NO ERRORS' TYPE 'S'.
+      ENDIF.
+       MODIFY Z12_AT FROM TABLE <FTNAME>.
+  IF SY-SUBRC = 0.
+  WRITE:/ 'DATA ADDED'.
+  ELSE.
+    WRITE:/ 'ERROR'.
+    ENDIF.
+    ENDFORM.
+
+
+
+
+
+
+FORM COURSES.
+      CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+    EXPORTING
+     I_FIELD_SEPERATOR          = 'X'
+     I_LINE_HEADER              = 'X'
+      i_tab_raw_data             = T1
+      i_filename                 = FILENAME
+    TABLES
+      i_tab_converted_data       = <FTNAME>
+*   EXCEPTIONS
+*     CONVERSION_FAILED          = 1
+*     OTHERS                     = 2
+            .
+    IF sy-subrc = 0.
+    WRITE:/ 'FILE READ' COLOR 3.
+    ELSE.
+    WRITE:/ 'NOT READ'.
+    ENDIF.
+     ASSIGN ITAB->* TO <FST>.
+  ASSIGN WA->* TO <FSW>.
+  WRITE:/ 'TABLE CREATED FOR COURSES' COLOR 3.
+    LOOP AT <FST> INTO <FSW>.
+  N1 = SY-TABIX.
+  DO.
+    ASSIGN COMPONENT SY-INDEX OF STRUCTURE <FSW> TO <FSCOL>.
+    IF SY-SUBRC <> 0.
+      EXIT.
+      ENDIF.
+
+CASE SY-INDEX.
+    WHEN 1.
+            IF <FSCOL> IS INITIAL.
+       CONCATENATE 'COURSEID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 2.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'COURSENAME IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 3.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'COURSEADMINID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 4.
+      IF <FSCOL> IS INITIAL.
+        CONCATENATE 'COURSEADMINSAPID IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+   WHEN 5.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'VIRTUALPOSSIBLE IS INITIAL IN ROW' N1 INTO WAALV.
+      ENDIF.
+   WHEN 6.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'HANDSON IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+   WHEN 7.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'TOTALMARKS IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+    WHEN 8.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'CUTOFMARKS IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+          ENDCASE.
+
+
+        IF WAALV IS NOT INITIAL.
+            APPEND WAALV TO italv.
+            CLEAR WAALV.
+            ENDIF.
+            ENDDO.
+          ENDLOOP.
+
+IF ITALV IS NOT INITIAL.
+
+  DATA P1 TYPE REF TO CL_SALV_TABLE.
+  CL_SALV_TABLE=>factory(
+*    EXPORTING
+*      list_display   = if_salv_c_bool_sap=>false " ALV Displayed in List Mode
+*      r_container    =                           " Abstract Container for GUI Controls
+*      container_name =
+    IMPORTING
+      r_salv_table   =   P1                     " Basis Class Simple ALV Tables
+    CHANGING
+      t_table        =  ITALV
+  ).
+*  CATCH cx_salv_msg. " ALV: General Error Class with Message
+  P1->display( ).
+*CATCH cx_salv_msg. " ALV: General Error Class with Message
+EXIT.
+ELSE.
+    MESSAGE 'NO ERRORS' TYPE 'S'.
+      ENDIF.
+       MODIFY Z12_COURSE FROM TABLE <FTNAME>.
+  IF SY-SUBRC = 0.
+  WRITE:/ 'DATA ADDED'.
+  ELSE.
+    WRITE:/ 'ERROR'.
+    ENDIF.
+    ENDFORM.
+
+ FORM INSTRUCTORALLOTMENT.
+      CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+    EXPORTING
+     I_FIELD_SEPERATOR          = 'X'
+     I_LINE_HEADER              = 'X'
+      i_tab_raw_data             = T1
+      i_filename                 = FILENAME
+    TABLES
+      i_tab_converted_data       = <FTNAME>
+*   EXCEPTIONS
+*     CONVERSION_FAILED          = 1
+*     OTHERS                     = 2
+            .
+    IF sy-subrc = 0.
+    WRITE:/ 'FILE READ' COLOR 3.
+    ELSE.
+    WRITE:/ 'NOT READ'.
+    ENDIF.
+     ASSIGN ITAB->* TO <FST>.
+  ASSIGN WA->* TO <FSW>.
+  WRITE:/ 'TABLE CREATED FOR INSTRUCTORALLOT' COLOR 3.
+    LOOP AT <FST> INTO <FSW>.
+  N1 = SY-TABIX.
+  DO.
+    ASSIGN COMPONENT SY-INDEX OF STRUCTURE <FSW> TO <FSCOL>.
+    IF SY-SUBRC <> 0.
+      EXIT.
+      ENDIF.
+
+CASE SY-INDEX.
+    WHEN 1.
+            IF <FSCOL> IS INITIAL.
+       CONCATENATE 'TRAININGID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 2.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'INSTRUCTORID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 3.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'NOTE IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+          ENDCASE.
+      IF WAALV IS NOT INITIAL.
+            APPEND WAALV TO italv.
+            CLEAR WAALV.
+            ENDIF.
+            ENDDO.
+          ENDLOOP.
+
+IF ITALV IS NOT INITIAL.
+
+  DATA P1 TYPE REF TO CL_SALV_TABLE.
+  CL_SALV_TABLE=>factory(
+*    EXPORTING
+*      list_display   = if_salv_c_bool_sap=>false " ALV Displayed in List Mode
+*      r_container    =                           " Abstract Container for GUI Controls
+*      container_name =
+    IMPORTING
+      r_salv_table   =   P1                     " Basis Class Simple ALV Tables
+    CHANGING
+      t_table        =  ITALV
+  ).
+*  CATCH cx_salv_msg. " ALV: General Error Class with Message
+  P1->display( ).
+*CATCH cx_salv_msg. " ALV: General Error Class with Message
+EXIT.
+ELSE.
+    MESSAGE 'NO ERRORS' TYPE 'S'.
+      ENDIF.
+       MODIFY Z12_IA FROM TABLE <FTNAME>.
+  IF SY-SUBRC = 0.
+  WRITE:/ 'DATA ADDED'.
+  ELSE.
+    WRITE:/ 'ERROR'.
+    ENDIF.
+    ENDFORM.
+
+
+
+
+
+
+ FORM STUDENTENROLL.
+      CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+    EXPORTING
+     I_FIELD_SEPERATOR          = 'X'
+     I_LINE_HEADER              = 'X'
+      i_tab_raw_data             = T1
+      i_filename                 = FILENAME
+    TABLES
+      i_tab_converted_data       = <FTNAME>
+*   EXCEPTIONS
+*     CONVERSION_FAILED          = 1
+*     OTHERS                     = 2
+            .
+    IF sy-subrc = 0.
+    WRITE:/ 'FILE READ' COLOR 3.
+    ELSE.
+    WRITE:/ 'NOT READ'.
+    ENDIF.
+     ASSIGN ITAB->* TO <FST>.
+  ASSIGN WA->* TO <FSW>.
+  WRITE:/ 'TABLE CREATED FOR STUDENTENROLL' COLOR 3.
+    LOOP AT <FST> INTO <FSW>.
+  N1 = SY-TABIX.
+  DO.
+    ASSIGN COMPONENT SY-INDEX OF STRUCTURE <FSW> TO <FSCOL>.
+    IF SY-SUBRC <> 0.
+      EXIT.
+      ENDIF.
+
+CASE SY-INDEX.
+    WHEN 1.
+            IF <FSCOL> IS INITIAL.
+       CONCATENATE 'TRAININGID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 2.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'STUDENTID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 3.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'MARKS IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 4.
+      IF <FSCOL> IS INITIAL.
+        CONCATENATE 'NOTE IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+        ENDCASE.
+
+       IF WAALV IS NOT INITIAL.
+            APPEND WAALV TO italv.
+            CLEAR WAALV.
+            ENDIF.
+
+            ENDDO.
+          ENDLOOP.
+
+IF ITALV IS NOT INITIAL.
+
+  DATA P1 TYPE REF TO CL_SALV_TABLE.
+  CL_SALV_TABLE=>factory(
+*    EXPORTING
+*      list_display   = if_salv_c_bool_sap=>false " ALV Displayed in List Mode
+*      r_container    =                           " Abstract Container for GUI Controls
+*      container_name =
+    IMPORTING
+      r_salv_table   =   P1                     " Basis Class Simple ALV Tables
+    CHANGING
+      t_table        =  ITALV
+  ).
+*  CATCH cx_salv_msg. " ALV: General Error Class with Message
+  P1->display( ).
+*CATCH cx_salv_msg. " ALV: General Error Class with Message
+EXIT.
+ELSE.
+    MESSAGE 'NO ERRORS' TYPE 'S'.
+      ENDIF.
+       MODIFY Z12_STEN FROM TABLE <FTNAME>.
+  IF SY-SUBRC = 0.
+  WRITE:/ 'DATA ADDED'.
+  ELSE.
+    WRITE:/ 'ERROR'.
+    ENDIF.
+    ENDFORM.
+
+
+
+
+ FORM TRAINING.
+      CALL FUNCTION 'TEXT_CONVERT_XLS_TO_SAP'
+    EXPORTING
+     I_FIELD_SEPERATOR          = 'X'
+     I_LINE_HEADER              = 'X'
+      i_tab_raw_data             = T1
+      i_filename                 = FILENAME
+    TABLES
+      i_tab_converted_data       = <FTNAME>
+*   EXCEPTIONS
+*     CONVERSION_FAILED          = 1
+*     OTHERS                     = 2
+            .
+    IF sy-subrc = 0.
+    WRITE:/ 'FILE READ' COLOR 3.
+    ELSE.
+    WRITE:/ 'NOT READ'.
+    ENDIF.
+     ASSIGN ITAB->* TO <FST>.
+  ASSIGN WA->* TO <FSW>.
+  WRITE:/ 'TABLE CREATED FOR TRAINING' COLOR 3.
+    LOOP AT <FST> INTO <FSW>.
+  N1 = SY-TABIX.
+  DO.
+    ASSIGN COMPONENT SY-INDEX OF STRUCTURE <FSW> TO <FSCOL>.
+    IF SY-SUBRC <> 0.
+      EXIT.
+      ENDIF.
+
+CASE SY-INDEX.
+    WHEN 1.
+            IF <FSCOL> IS INITIAL.
+       CONCATENATE 'TRAININGID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 2.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'COURSEID IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 3.
+          IF <FSCOL> IS INITIAL.
+       CONCATENATE 'STARTDATE IS INITIAL IN ROW' N1 INTO WAALV.
+                ENDIF.
+    WHEN 4.
+      IF <FSCOL> IS INITIAL.
+        CONCATENATE 'ENDDATE IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+   WHEN 5.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'ISCOMPLETE IS INITIAL IN ROW' N1 INTO WAALV.
+      ENDIF.
+   WHEN 6.
+       IF <FSCOL> IS INITIAL.
+        CONCATENATE 'CAPACITY IS INITIAL IN ROW' N1 INTO WAALV.
+        ENDIF.
+          ENDCASE.
+
+       IF WAALV IS NOT INITIAL.
+            APPEND WAALV TO italv.
+            CLEAR WAALV.
+            ENDIF.
+            ENDDO.
+          ENDLOOP.
+
+IF ITALV IS NOT INITIAL.
+
+  DATA P1 TYPE REF TO CL_SALV_TABLE.
+  CL_SALV_TABLE=>factory(
+*    EXPORTING
+*      list_display   = if_salv_c_bool_sap=>false " ALV Displayed in List Mode
+*      r_container    =                           " Abstract Container for GUI Controls
+*      container_name =
+    IMPORTING
+      r_salv_table   =   P1                     " Basis Class Simple ALV Tables
+    CHANGING
+      t_table        =  ITALV
+  ).
+*  CATCH cx_salv_msg. " ALV: General Error Class with Message
+  P1->display( ).
+*CATCH cx_salv_msg. " ALV: General Error Class with Message
+EXIT.
+ELSE.
+    MESSAGE 'NO ERRORS' TYPE 'S'.
+      ENDIF.
+       MODIFY Z12_TRAIN FROM TABLE <FTNAME>.
+  IF SY-SUBRC = 0.
+  WRITE:/ 'DATA ADDED'.
+  ELSE.
+    WRITE:/ 'ERROR'.
+    ENDIF.
+    ENDFORM.
+*** INCLUDE Z12_DATAUP
+*** INCLUDE Z12_DATAUP

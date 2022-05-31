@@ -1,0 +1,47 @@
+*&---------------------------------------------------------------------*
+*& Report Z12_CS6
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT Z12_CS6.
+
+TABLES: z12_at.
+
+DATA: itab TYPE STANDARD TABLE OF z12_at.
+DATA: l_file        TYPE string,
+      l_table_count TYPE i.
+
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-uad.
+
+  PARAMETERS: ps RADIOBUTTON GROUP g1,
+              as RADIOBUTTON GROUP g1.
+  PARAMETERS: file TYPE rlgrap-filename.
+
+SELECTION-SCREEN END OF BLOCK b1.
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR file.
+  CALL FUNCTION 'F4_FILENAME'
+    EXPORTING
+      program_name  = syst-cprog
+      dynpro_number = syst-dynnr
+      field_name    = ' '
+    IMPORTING
+      file_name     = file.
+
+START-OF-SELECTION.
+
+  l_file = file.
+  CALL FUNCTION 'GUI_UPLOAD'
+    EXPORTING
+      filename            = l_file
+      has_field_separator = 'X'
+    TABLES
+      data_tab            = itab.
+
+  DELETE itab INDEX 1.
+
+  INSERT z12_at FROM TABLE itab.
+  DESCRIBE TABLE itab LINES l_table_count.
+  COMMIT WORK AND WAIT.
+
+  WRITE: l_table_count, 'ENTRIES IMPORTED' COLOR 4.

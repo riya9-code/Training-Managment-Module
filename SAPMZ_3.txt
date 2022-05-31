@@ -1,0 +1,25 @@
+
+
+
+*&---------------------------------------------------------------------*
+*& Module Pool      SAPMZ_3
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+
+INCLUDE MZY3TOP                                 .    " Global Data
+
+ INCLUDE MZY3O01                                 .  " PBO-Modules
+ INCLUDE MZY3I01                                 .  " PAI-Modules
+* INCLUDE MZY3F01                                 .  " FORM-Routines
+
+INCLUDE mz_3_testi01.
+
+*&SPWizard: Data incl. inserted by SP Wizard. DO NOT CHANGE THIS LINE!
+*INCLUDE MZ_CS3TOP .
+*&SPWizard: Include inserted by SP Wizard. DO NOT CHANGE THIS LINE!
+*INCLUDE MZ_CS3O01 .
+*INCLUDE MZ_CS3I01 .
+*INCLUDE MZ_CS3F01 .
+
+INCLUDE mz_cs3_f4helpi01.
